@@ -1,1 +1,186 @@
-<!-- Rebuild HTML from final script when redeployed -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha Ultimate Ltd - Company Expense Form</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1a1a2e;
+      color: #f0f0f0;
+      padding: 20px;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      background: #2d2d44;
+      color: #f5f5f5;
+    }
+    input[type="file"] {
+      background: #3a3a5c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #444;
+    }
+    .admin-panel {
+      display: none;
+      margin-top: 30px;
+      background: #222244;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .submit-btn {
+      background: #1f6feb;
+      color: white;
+      font-weight: bold;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .header img {
+      height: 60px;
+    }
+    @media (max-width: 768px) {
+      input, select, textarea, button, table, th, td {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="./assets/ALPHA LOGO SQUIRE.png" alt="Alpha Ultimate Ltd Logo" />
+    <h2>Alpha Ultimate Ltd – Company Expense Form</h2>
+  </div>
+
+  <form id="expenseForm">
+    <label>Employee Email</label>
+    <input type="email" id="submitterEmail" required readonly />
+
+    <label>Employee Name</label>
+    <input type="text" id="submitterName" required readonly />
+
+    <label>Department/Project Name</label>
+    <input type="text" id="department" required />
+
+    <label>Date of Expense</label>
+    <input type="text" id="expenseDate" readonly />
+
+    <label>Expense Category</label>
+    <select id="category" required onchange="showCustomCategory(this.value)">
+      <option value="">Select...</option>
+      <option>Travel</option>
+      <option>Meals & Entertainment</option>
+      <option>Office Supplies</option>
+      <option>IT Equipment</option>
+      <option>Training</option>
+      <option>Consulting</option>
+      <option>Marketing</option>
+      <option>Utilities</option>
+      <option value="Other">Other (Specify Below)</option>
+    </select>
+    <input type="text" id="customCategory" style="display:none" placeholder="Specify Other Category" required />
+
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Description</th><th>Quantity</th><th>Rate</th><th>Amount</th><th>Receipt</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" required /></td>
+          <td><input type="text" required /></td>
+          <td><input type="number" class="qty" required /></td>
+          <td><input type="number" class="rate" required /></td>
+          <td><input type="number" class="amount" readonly /></td>
+          <td><input type="file" required /></td>
+        </tr>
+        <tr>
+          <td><input type="text" required /></td>
+          <td><input type="text" required /></td>
+          <td><input type="number" class="qty" required /></td>
+          <td><input type="number" class="rate" required /></td>
+          <td><input type="number" class="amount" readonly /></td>
+          <td><input type="file" required /></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <label>Total Amount</label>
+    <input type="number" id="totalAmount" readonly required />
+
+    <label>Payment Method</label>
+    <select required>
+      <option value="">Select...</option>
+      <option>Cash</option>
+      <option>Card</option>
+      <option>Bank Transfer</option>
+    </select>
+
+    <label>Submit Time</label>
+    <input type="text" id="submitTime" readonly required />
+
+    <label>Admin Password</label>
+    <input type="password" id="adminPass" oninput="checkAdmin(this.value)" placeholder="Enter password for Admin Panel" />
+
+    <div class="admin-panel" id="adminPanel">
+      <h3>Admin Approval Panel</h3>
+      <label><input type="checkbox" required /> Approve Entry</label><br />
+      <label><input type="checkbox" /> Flag for Review</label>
+    </div>
+
+    <button class="submit-btn" type="submit">Submit</button>
+  </form>
+
+  <script>
+    const updateAmounts = () => {
+      let total = 0;
+      document.querySelectorAll('tbody tr').forEach(row => {
+        const qty = parseFloat(row.querySelector('.qty')?.value || 0);
+        const rate = parseFloat(row.querySelector('.rate')?.value || 0);
+        const amt = qty * rate;
+        row.querySelector('.amount').value = amt.toFixed(2);
+        total += amt;
+      });
+      document.getElementById('totalAmount').value = total.toFixed(2);
+    };
+
+    const showCustomCategory = (val) => {
+      const field = document.getElementById('customCategory');
+      field.style.display = val === 'Other' ? 'block' : 'none';
+    }
+
+    const checkAdmin = (val) => {
+      document.getElementById('adminPanel').style.display = val === 'BadSoul' ? 'block' : 'none';
+    };
+
+    document.querySelectorAll('.qty, .rate').forEach(input => {
+      input.addEventListener('input', updateAmounts);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+      document.getElementById('expenseDate').value = now.toLocaleDateString();
+      document.getElementById('submitTime').value = now.toLocaleString();
+
+      // For demo, we'll simulate Google login details:
+      const email = 'your-alphaultltd@gmail.com';
+      const name = 'Alpha Submitter';
+      document.getElementById('submitterEmail').value = email;
+      document.getElementById('submitterName').value = name;
+    });
+  </script>
+</body>
+</html>
